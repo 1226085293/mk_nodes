@@ -1,0 +1,57 @@
+{
+	"package_version": 2,
+	"name": "cc-plugin-template",
+	"version": "0.0.1",
+	"description": "插件模板",
+	"author": "_muzzik",
+	"main": "./src/main.js",
+	"scripts": {
+		"build": "cc-plugin-cli c -p cc-plugin-template"
+	},
+	"contributions": {
+		"scene": {
+			"script": "./src/scene.js"
+		},
+		"menu": [
+			{
+				"path": "i18n:menu.extension",
+				"label": "i18n:cc-plugin-template.title",
+				"message": "open"
+			}
+		],
+		"messages": {
+			"open": {
+				"methods": [
+					"open"
+				]
+			}
+		},
+		"shortcuts": [
+			{
+				"message": "open",
+				"win": "f1",
+				"mac": "f1"
+			}
+		]
+	},
+	"panels": {
+		"default": {
+			"main": "./src/panel",
+			"type": "dockable",
+			"title": "mk插件模板",
+			"size": {
+				"width": 500,
+				"height": 600,
+				"min-width": 500,
+				"min-height": 600
+			}
+		}
+	},
+	"devDependencies": {
+		"@types/node": "^17.0.31"
+	},
+	"dependencies": {
+		"element-plus": "^2.2.1",
+		"vue": "^3.2.33"
+	}
+}
