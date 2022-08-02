@@ -42,7 +42,7 @@ const component: vue.Component = {
 				storage.data.generate_type = Number(value);
 
 				// 更新视图，避免 ui-prop 导致的一系列问题
-				this.self.$refs.script_end_s.style.display =
+				this.self.$refs.script_end_s_root.style.display =
 					storage.data.generate_type !== config.generate_type.script ? "none" : "";
 			},
 			/** 脚本名后缀 */
@@ -63,7 +63,10 @@ const component: vue.Component = {
 		// 更新视图
 		this.$refs.root_position_type.value = storage.data.root_position_type;
 		this.$refs.generate_type.value = storage.data.generate_type;
-		this.$refs.script_end_s.style.display =
+		this.$refs.root_base.value = storage.data.root_base;
+		this.$refs.root_mark.value = storage.data.root_mark;
+		this.$refs.script_end_s.value = storage.data.script_end_s;
+		this.$refs.script_end_s_root.style.display =
 			storage.data.generate_type !== config.generate_type.script ? "none" : "";
 	},
 };

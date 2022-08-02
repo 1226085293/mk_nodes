@@ -74,7 +74,9 @@ module config {
 				// 属性
 				else {
 					value_s = [
-						`@property({ displayName: "${name_ss[0] || name_ss[1]}", type: Node })`,
+						`@property({ displayName: "nodes-${
+							name_ss[0] || name_ss[1]
+						}", type: Node })`,
 						`${name_s}: Node = null!;`,
 					].join("\n");
 				}

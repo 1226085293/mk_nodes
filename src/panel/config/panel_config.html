@@ -16,13 +16,23 @@
 	<!-- 根节点基类 -->
 	<ui-prop style="margin: 5px">
 		<ui-label slot="label">基类</ui-label>
-		<ui-input v-model="root_base" slot="content"></ui-input>
+		<ui-input
+			ref="root_base"
+			v-bind:value="root_base"
+			slot="content"
+			@change="root_base = $event.target.value"
+		></ui-input>
 	</ui-prop>
 
 	<!-- 根节点标记 -->
 	<ui-prop style="margin: 5px">
 		<ui-label slot="label">标记</ui-label>
-		<ui-input v-model="root_mark" slot="content"></ui-input>
+		<ui-input
+			ref="root_mark"
+			v-bind:value="root_mark"
+			slot="content"
+			@change="root_mark = $event.target.value"
+		></ui-input>
 	</ui-prop>
 
 	<!-- 生成方式 -->
@@ -40,8 +50,13 @@
 	</ui-prop>
 
 	<!-- 脚本名后缀（独立脚本名后缀） -->
-	<ui-prop style="margin: 5px" ref="script_end_s">
+	<ui-prop style="margin: 5px" ref="script_end_s_root">
 		<ui-label slot="label">脚本名后缀</ui-label>
-		<ui-input v-model="script_end_s" slot="content"></ui-input>
+		<ui-input
+			ref="script_end_s"
+			v-bind:value="script_end_s"
+			slot="content"
+			@change="script_end_s = $event.target.value"
+		></ui-input>
 	</ui-prop>
 </div>

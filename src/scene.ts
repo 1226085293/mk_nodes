@@ -134,7 +134,7 @@ export const methods = {
 					// 初始化删除列表
 					{
 						let reg = new RegExp(
-							`(?<=displayName: ${string_head_s})([^${string_head_s}]+)`,
+							`(?<=displayName: ${string_head_s}nodes-)([^${string_head_s}]+)`,
 							"g"
 						);
 						del_ss = property_as.filter((v) => v.match(reg));
@@ -236,9 +236,11 @@ export const methods = {
 						} else {
 							index_n += storage.data.root_mark.length;
 						}
+						index_n = content_s_.indexOf("\n", index_n);
 						// 添加属性
 						content_s_ =
 							content_s_.slice(0, index_n) +
+							"\n" +
 							nodes.map((v) => v.value_s).join("\n") +
 							content_s_.slice(index_n);
 					}
@@ -270,8 +272,9 @@ export const methods = {
 						// 添加
 						if (index_n === -1) {
 							content_s_ =
-								`import Nodes from "./${comp_name_s}${storage.data.script_end_s}";\n` +
-								content_s_;
+								`import Nodes from "./${path.basename(comp_path_s, ".ts")}${
+									storage.data.script_end_s
+								}";\n` + content_s_;
 						}
 					}
 					// 添加声明
@@ -292,6 +295,7 @@ export const methods = {
 							} else {
 								index_n += storage.data.root_mark.length;
 							}
+							index_n = content_s_.indexOf("\n", index_n);
 						}
 						// 添加声明
 						content_s_ =
