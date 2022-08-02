@@ -1,0 +1,10 @@
+import * as cc from "cc";
+
+class Nodes {
+	constructor(node: cc.Node) {
+		// 定义
+	}
+	// 声明
+}
+
+export default Nodes;
