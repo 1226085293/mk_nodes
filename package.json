@@ -2,7 +2,7 @@
 	"package_version": 2,
 	"name": "mk_nodes",
 	"version": "0.0.1",
-	"description": "插件模板",
+	"description": "根据节点名前缀生成节点引用代码的插件，muzzik 出品",
 	"author": "_muzzik",
 	"main": "./src/main.js",
 	"scripts": {
@@ -34,8 +34,8 @@
 		"shortcuts": [
 			{
 				"message": "generate",
-				"win": "f3",
-				"mac": "f3"
+				"win": "f1",
+				"mac": "f1"
 			}
 		]
 	},
@@ -43,7 +43,7 @@
 		"default": {
 			"main": "./src/panel",
 			"type": "dockable",
-			"title": "mk插件模板",
+			"title": "mk插件",
 			"size": {
 				"width": 500,
 				"height": 600,
