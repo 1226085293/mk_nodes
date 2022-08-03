@@ -42,7 +42,12 @@ class string_extend {
 			if (config && !config.parser) {
 				config.parser = "typescript";
 			}
-			result_s = prettier.format(source_s_, config);
+			result_s = prettier.format(
+				source_s_,
+				config || {
+					filepath: "*.ts",
+				}
+			);
 		} catch (err) {
 			log.error("格式化代码失败", source_s_);
 			result_s = source_s_;
