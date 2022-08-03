@@ -51,17 +51,21 @@ export const methods = {
 			case config.root_position_type.mark:
 				{
 					for (let v of component_as) {
-						let path_s = path.normalize(
-							(await Editor.Message.request(
-								"asset-db",
-								"query-path",
-								(mount_comp as any).__scriptUuid
-							))!
-						);
-						let content_s = fs.readFileSync(path_s, "utf-8");
-						if (content_s.includes(storage.data.root_mark)) {
-							mount_comp = v;
-							break;
+						if ((v as any).__scriptUuid) {
+							let path_s = path.normalize(
+								(await Editor.Message.request(
+									"asset-db",
+									"query-path",
+									(v as any).__scriptUuid
+								))!
+							);
+							if (path_s) {
+								let content_s = fs.readFileSync(path_s, "utf-8");
+								if (content_s?.includes(storage.data.root_mark)) {
+									mount_comp = v;
+									break;
+								}
+							}
 						}
 					}
 				}
@@ -260,7 +264,7 @@ export const methods = {
 									},
 								});
 							});
-						}, 1000);
+						}, 3000);
 					}
 				}
 				break;
