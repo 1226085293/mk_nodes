@@ -17,7 +17,7 @@ class string_extend {
 		let config_path_s = path.join(this._config.prettier_path_s, ".prettierrc.js");
 		// js 配置
 		if (fs.existsSync(config_path_s)) {
-			this._prettier_config = require("config_path_s");
+			this._prettier_config = require(config_path_s);
 			return;
 		}
 		// json 配置
