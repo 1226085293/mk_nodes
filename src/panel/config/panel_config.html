@@ -1,37 +1,34 @@
 <div class="panel_config">
-	<!-- 根节点定位 -->
+	<!-- 挂载定位方式 -->
 	<ui-prop style="margin: 5px">
-		<ui-label slot="label">根节点定位</ui-label>
+		<ui-label slot="label">挂载定位方式</ui-label>
 		<ui-select
-			ref="root_position_type"
-			v-bind:value="root_position_type"
+			v-bind:value="mount_position_type"
+			@confirm="mount_position_type = Number($event.target.value)"
 			slot="content"
-			@change="root_position_type = $event.target.value"
 		>
-			<option v-bind:value="config_root_position_type.base">固定基类</option>
-			<option v-bind:value="config_root_position_type.mark">生成标记</option>
+			<option v-bind:value="config_mount_position_type.base">固定基类</option>
+			<option v-bind:value="config_mount_position_type.mark">生成标记</option>
 		</ui-select>
 	</ui-prop>
 
-	<!-- 根节点基类 -->
-	<ui-prop style="margin: 5px">
-		<ui-label slot="label">基类</ui-label>
+	<!-- 挂载组件基类 -->
+	<ui-prop style="margin: 5px" v-show="mount_position_type === config_mount_position_type.base">
+		<ui-label slot="label">挂载组件基类</ui-label>
 		<ui-input
-			ref="root_base"
-			v-bind:value="root_base"
+			v-bind:value="mount_comp_base"
+			@confirm="mount_comp_base = $event.target.value"
 			slot="content"
-			@change="root_base = $event.target.value"
 		></ui-input>
 	</ui-prop>
 
-	<!-- 根节点标记 -->
-	<ui-prop style="margin: 5px">
-		<ui-label slot="label">标记</ui-label>
+	<!-- 挂载组件标记 -->
+	<ui-prop style="margin: 5px" v-show="mount_position_type === config_mount_position_type.mark">
+		<ui-label slot="label">挂载组件标记</ui-label>
 		<ui-input
-			ref="root_mark"
-			v-bind:value="root_mark"
+			v-bind:value="mount_comp_mark"
+			@confirm="mount_comp_mark = $event.target.value"
 			slot="content"
-			@change="root_mark = $event.target.value"
 		></ui-input>
 	</ui-prop>
 
@@ -39,10 +36,9 @@
 	<ui-prop style="margin: 5px">
 		<ui-label slot="label">生成方式</ui-label>
 		<ui-select
-			ref="generate_type"
 			v-bind:value="generate_type"
+			@confirm="generate_type = Number($event.target.value)"
 			slot="content"
-			@change="generate_type = $event.target.value"
 		>
 			<option v-bind:value="config_generate_type.property">属性</option>
 			<option v-bind:value="config_generate_type.script">脚本</option>
@@ -50,13 +46,12 @@
 	</ui-prop>
 
 	<!-- 脚本名后缀（独立脚本名后缀） -->
-	<ui-prop style="margin: 5px" ref="script_end_s_root">
+	<ui-prop style="margin: 5px" v-show="generate_type === config_generate_type.script">
 		<ui-label slot="label">脚本名后缀</ui-label>
 		<ui-input
-			ref="script_end_s"
 			v-bind:value="script_end_s"
 			slot="content"
-			@change="script_end_s = $event.target.value"
+			@confirm="script_end_s = $event.target.value"
 		></ui-input>
 	</ui-prop>
 </div>

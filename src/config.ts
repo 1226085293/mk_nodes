@@ -3,7 +3,7 @@ import * as cc from "cc";
 
 module config {
 	/** 根节点定位类型 */
-	export enum root_position_type {
+	export enum mount_position_type {
 		/** 固定基类 */
 		base,
 		/** 生成标记 */

@@ -39,16 +39,16 @@ export const methods = {
 		);
 		/** 挂载组件 */
 		let mount_comp: cc.Component | null = null;
-		switch (storage.data.root_position_type) {
-			case config.root_position_type.base:
+		switch (storage.data.mount_position_type) {
+			case config.mount_position_type.base:
 				{
 					mount_comp =
 						component_as.find((v) =>
-							this.base_class_comparison(v.constructor, storage.data.root_base)
+							this.base_class_comparison(v.constructor, storage.data.mount_comp_base)
 						) ?? null;
 				}
 				break;
-			case config.root_position_type.mark:
+			case config.mount_position_type.mark:
 				{
 					for (let v of component_as) {
 						if ((v as any).__scriptUuid) {
@@ -61,7 +61,7 @@ export const methods = {
 							);
 							if (path_s) {
 								let content_s = fs.readFileSync(path_s, "utf-8");
-								if (content_s?.includes(storage.data.root_mark)) {
+								if (content_s?.includes(storage.data.mount_comp_mark)) {
 									mount_comp = v;
 									break;
 								}
@@ -227,7 +227,7 @@ export const methods = {
 					// 添加属性
 					{
 						/** 添加位置 */
-						let index_n = content_s_.indexOf(storage.data.root_mark);
+						let index_n = content_s_.indexOf(storage.data.mount_comp_mark);
 						if (index_n === -1) {
 							index_n = content_s_.indexOf(
 								`export class ${comp_name_s} extends Component {`
@@ -238,7 +238,7 @@ export const methods = {
 							}
 							index_n += `export class ${comp_name_s} extends Component {`.length;
 						} else {
-							index_n += storage.data.root_mark.length;
+							index_n += storage.data.mount_comp_mark.length;
 						}
 						index_n = content_s_.indexOf("\n", index_n);
 						// 添加属性
@@ -284,7 +284,7 @@ export const methods = {
 					// 添加声明
 					{
 						/** 添加位置 */
-						let index_n = content_s_.indexOf(storage.data.root_mark);
+						let index_n = content_s_.indexOf(storage.data.mount_comp_mark);
 						// 初始化添加位置
 						{
 							if (index_n === -1) {
@@ -297,7 +297,7 @@ export const methods = {
 								}
 								index_n += `export class ${comp_name_s} extends Component {`.length;
 							} else {
-								index_n += storage.data.root_mark.length;
+								index_n += storage.data.mount_comp_mark.length;
 							}
 							index_n = content_s_.indexOf("\n", index_n);
 						}

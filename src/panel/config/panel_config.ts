@@ -10,64 +10,52 @@ const component: vue.Component = {
 	methods: {},
 	data() {
 		return {
-			self: null,
-			config_root_position_type: config.root_position_type,
-			/** 根节点定位类型 */
-			get root_position_type() {
-				return storage.data.root_position_type;
-			},
-			set root_position_type(value) {
-				storage.data.root_position_type = Number(value);
-			},
-			/** 根节点基类 */
-			get root_base() {
-				return storage.data.root_base;
-			},
-			set root_base(value) {
-				storage.data.root_base = value;
-			},
-			/** 根节点标记 */
-			get root_mark() {
-				return storage.data.root_mark;
-			},
-			set root_mark(value) {
-				storage.data.root_mark = value;
-			},
+			config_mount_position_type: config.mount_position_type,
 			config_generate_type: config.generate_type,
+			/** 生成类型 */
+			generate_type: config.generate_type.property,
 			/** 根节点定位类型 */
-			get generate_type() {
-				return storage.data.generate_type;
-			},
-			set generate_type(value) {
-				storage.data.generate_type = Number(value);
-
-				// 更新视图，避免 ui-prop 导致的一系列问题
-				this.self.$refs.script_end_s_root.style.display =
-					storage.data.generate_type !== config.generate_type.script ? "none" : "";
-			},
+			mount_position_type: config.mount_position_type.mark,
+			/** 根节点定位基类 */
+			mount_comp_base: "cc.Component",
+			/** 根节点定位标记 */
+			mount_comp_mark: "extends Component {",
 			/** 脚本名后缀 */
-			get script_end_s() {
-				return storage.data.script_end_s;
-			},
-			set script_end_s(value) {
-				storage.data.script_end_s = value;
-			},
+			script_end_s: "Nodes",
 		};
 	},
-	watch: {},
+	watch: {
+		/** 挂载定位方式 */
+		mount_position_type(value) {
+			storage.data.mount_position_type = Number(value);
+		},
+		/** 挂载组件基类 */
+		mount_comp_base(value) {
+			storage.data.mount_comp_base = value;
+		},
+		/** 挂载组件标记 */
+		mount_comp_mark(value) {
+			storage.data.mount_comp_mark = value;
+		},
+		/** 生成方式 */
+		generate_type(value) {
+			storage.data.generate_type = Number(value);
+		},
+		/** 脚本名后缀 */
+		script_end_s(value) {
+			storage.data.script_end_s = value;
+		},
+	},
 	created() {
 		this.self = this;
 	},
 	async mounted() {
 		await storage.update();
-		// 更新视图
-		this.$refs.root_position_type.value = storage.data.root_position_type;
-		this.$refs.generate_type.value = storage.data.generate_type;
-		this.$refs.root_base.value = storage.data.root_base;
-		this.$refs.root_mark.value = storage.data.root_mark;
-		this.$refs.script_end_s.value = storage.data.script_end_s;
-		this.$refs.script_end_s_root.style.display =
-			storage.data.generate_type !== config.generate_type.script ? "none" : "";
+		this.generate_type = storage.data.generate_type;
+		this.mount_position_type = storage.data.mount_position_type;
+		this.mount_comp_base = storage.data.mount_comp_base;
+		this.mount_comp_mark = storage.data.mount_comp_mark;
+		this.script_end_s = storage.data.script_end_s;
 	},
 };
 

@@ -20,11 +20,11 @@ class storage {
 		/** 生成类型 */
 		generate_type: config.generate_type.property,
 		/** 根节点定位类型 */
-		root_position_type: config.root_position_type.mark,
+		mount_position_type: config.mount_position_type.mark,
 		/** 根节点定位基类 */
-		root_base: "cc.Component",
+		mount_comp_base: "cc.Component",
 		/** 根节点定位标记 */
-		root_mark: "extends Component {",
+		mount_comp_mark: "extends Component {",
 		/** 脚本名后缀 */
 		script_end_s: "Nodes",
 	};
