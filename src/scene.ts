@@ -159,7 +159,11 @@ export const methods = {
 							}
 							content_s_ =
 								content_s_.slice(0, index_n) +
-								content_s_.slice(index_n + v_s.length);
+								content_s_.slice(
+									index_n +
+										v_s.length +
+										(content_s_[index_n + v_s.length] === "\n" ? 1 : 0)
+								);
 						});
 					}
 				}
