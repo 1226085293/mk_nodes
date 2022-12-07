@@ -1,5 +1,5 @@
 import log from "./log";
-import type * as cc from "cc";
+import * as cc from "cc";
 import * as fs from "fs";
 import config from "./config";
 import storage from "./storage";
@@ -19,6 +19,9 @@ export function unload() {}
 
 /** 场景事件放在此处 */
 export const methods = {
+	/** 场景刷新事件 */
+	scene_update_fs: [] as { valid_f?: () => boolean; event_f: () => void }[],
+
 	/** 判断基类是否一致 */
 	base_class_comparison(value_: Function, super_s_: string): boolean {
 		let temp = (self as any).cc.js.getSuper(value_);
@@ -228,6 +231,14 @@ export const methods = {
 		switch (storage.data.generate_type) {
 			case config.generate_type.property:
 				{
+					// 添加导入
+					{
+						let index_n = content_s_.indexOf("import * as cc from");
+						// 添加
+						if (index_n === -1) {
+							content_s_ = `import * as cc from "cc";\n` + content_s_;
+						}
+					}
 					// 添加属性
 					{
 						/** 添加位置 */
@@ -254,21 +265,36 @@ export const methods = {
 					}
 					// 属性赋值
 					{
-						let comp_index_n = mount_comp_.node.components.indexOf(mount_comp_);
-						setTimeout(() => {
-							nodes.forEach((v) => {
-								Editor.Message.send("scene", "set-property", {
-									uuid: mount_comp_.node.uuid,
-									path: `__comps__.${comp_index_n}.${v.name_s}`,
-									dump: {
-										type: "cc.Node",
-										value: {
-											uuid: v.node.uuid,
+						/** 当前节点路径 */
+						let node_path_s = (mount_comp_.node as any)[" INFO "].split(", path: ")[1];
+
+						this.scene_update_fs.push({
+							valid_f: () => Boolean(cc.find(node_path_s)),
+							event_f: () => {
+								let node = cc.find(node_path_s)!;
+								/** 组件下标 */
+								let comp_index_n = node.components.findIndex(
+									(v) => v.name === mount_comp_.name
+								);
+
+								// 更新属性列表
+								nodes.forEach((v) => {
+									// 场景刷新后 node 失效
+									Editor.Message.send("scene", "set-property", {
+										uuid: node.uuid,
+										path: `__comps__.${comp_index_n}.${v.name_s}`,
+										dump: {
+											type: "cc.Node",
+											value: {
+												uuid: cc.find(
+													(v.node as any)[" INFO "].split(", path: ")[1]
+												)!.uuid,
+											},
 										},
-									},
+									});
 								});
-							});
-						}, 3000);
+							},
+						});
 					}
 				}
 				break;
@@ -425,6 +451,7 @@ export const methods = {
 		lib_file.add(mount_path_s, content_s);
 	},
 	/* ------------------------------- segmentation ------------------------------- */
+	/** 生成代码 */
 	async event_generate(): Promise<void> {
 		let node_uuid_ss: string[] = Editor.Selection.getSelected("node");
 		if (!node_uuid_ss.length) {
@@ -438,5 +465,17 @@ export const methods = {
 			await this.generate_nodes(v_s);
 		}
 		log.log("生成结束");
+	},
+
+	/** 场景刷新 */
+	event_scene_update(): void {
+		// 执行事件
+		this.scene_update_fs.forEach(async (v) => {
+			if (v.valid_f && !(await v.valid_f())) {
+				return;
+			}
+			v.event_f();
+		});
+		this.scene_update_fs.splice(0, this.scene_update_fs.length);
 	},
 };

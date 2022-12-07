@@ -76,8 +76,8 @@ module config {
 					value_s = [
 						`@property({ displayName: "nodes-${
 							name_ss[0] || name_ss[1]
-						}", type: Node })`,
-						`${name_s}: Node = null!;`,
+						}", type: cc.Node })`,
+						`${name_s}: cc.Node = null!;`,
 					].join("\n");
 				}
 				return {

@@ -29,6 +29,11 @@
 				"methods": [
 					"generate"
 				]
+			},
+			"programming:compiled": {
+				"methods": [
+					"scene_update"
+				]
 			}
 		},
 		"shortcuts": [
