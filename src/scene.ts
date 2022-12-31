@@ -8,14 +8,16 @@ import lib_file from "../../@libs/lib_file";
 import string_extend from "./lib/string_extend";
 import lib_string_extend from "../../@libs/lib_string_extend";
 
-export function load() {
+export function load(): void {
 	// 初始化本地 lib
 	string_extend.init({
 		prettier_path_s: Editor.Project.path,
 	});
 }
 
-export function unload() {}
+export function unload(): void {
+	// ...
+}
 
 /** 场景事件放在此处 */
 export const methods = {
@@ -23,8 +25,9 @@ export const methods = {
 	scene_update_fs: [] as { valid_f?: () => boolean; event_f: () => void }[],
 
 	/** 判断基类是否一致 */
-	base_class_comparison(value_: Function, super_s_: string): boolean {
-		let temp = (self as any).cc.js.getSuper(value_);
+	base_class_comparison(value_: any, super_s_: string): boolean {
+		const temp = (self as any).cc.js.getSuper(value_);
+
 		if (!temp) {
 			return false;
 		}
@@ -37,11 +40,12 @@ export const methods = {
 	/** 查找挂载路径 */
 	async find_mount_path(node_: cc.Node): Promise<cc.Component | null> {
 		/** 非 cc 组件 */
-		let component_as = node_.components.filter(
+		const component_as = node_.components.filter(
 			(v) => !(self as any).cc.js.getClassName(v).startsWith("cc.")
 		);
 		/** 挂载组件 */
 		let mount_comp: cc.Component | null = null;
+
 		switch (storage.data.mount_position_type) {
 			case config.mount_position_type.base:
 				{
@@ -50,20 +54,23 @@ export const methods = {
 							this.base_class_comparison(v.constructor, storage.data.mount_comp_base)
 						) ?? null;
 				}
+
 				break;
 			case config.mount_position_type.mark:
 				{
-					for (let v of component_as) {
+					for (const v of component_as) {
 						if ((v as any).__scriptUuid) {
-							let path_s = path.normalize(
+							const path_s = path.normalize(
 								(await Editor.Message.request(
 									"asset-db",
 									"query-path",
 									(v as any).__scriptUuid
 								))!
 							);
+
 							if (path_s) {
-								let content_s = fs.readFileSync(path_s, "utf-8");
+								const content_s = fs.readFileSync(path_s, "utf-8");
+
 								if (content_s?.includes(storage.data.mount_comp_mark)) {
 									mount_comp = v;
 									break;
@@ -72,6 +79,7 @@ export const methods = {
 						}
 					}
 				}
+
 				break;
 		}
 		return mount_comp;
@@ -86,7 +94,7 @@ export const methods = {
 		/** 中断生成 */
 		let break_b: boolean;
 
-		for (let v of node_.children) {
+		for (const v of node_.children) {
 			break_b = false;
 			// 生成
 			config.generate_config_as.forEach((v2) => {
@@ -118,17 +126,20 @@ export const methods = {
 			case config.generate_type.property:
 				{
 					/** 属性列表 */
-					let property_as = content_s_.match(/@property([^\n]*)\n([^;]*);/g);
+					const property_as = content_s_.match(/@property([^\n]*)\n([^;]*);/g);
+
 					// 无属性
 					if (!property_as?.length) {
 						break;
 					}
 					/** 字符头 */
 					let string_head_s: string;
+
 					// 初始化字符头
 					{
-						let index_n =
+						const index_n =
 							property_as[0].indexOf("displayName: ") + "displayName: ".length;
+
 						string_head_s = property_as[0].slice(index_n, index_n + 1);
 						if (!string_head_s) {
 							log.error("del_generate_code - 未找到字符头");
@@ -138,12 +149,14 @@ export const methods = {
 
 					/** 删除列表 */
 					let del_ss: string[];
+
 					// 初始化删除列表
 					{
-						let reg = new RegExp(
+						const reg = new RegExp(
 							`(?<=displayName: ${string_head_s}nodes-)([^${string_head_s}]+)`,
 							"g"
 						);
+
 						del_ss = property_as.filter((v) => v.match(reg));
 						// 不存在删除属性
 						if (!del_ss) {
@@ -154,6 +167,7 @@ export const methods = {
 					// 删除属性
 					{
 						let index_n: number;
+
 						del_ss.forEach((v_s) => {
 							index_n = content_s_.indexOf(v_s);
 							if (index_n === -1) {
@@ -170,12 +184,16 @@ export const methods = {
 						});
 					}
 				}
+
 				break;
 			case config.generate_type.script:
 				{
 					// 删除导入
 					{
-						let index_n = content_s_.indexOf(`import Nodes from`);
+						const index_n = content_s_.indexOf(
+							`import ${storage.data.generate_class_s} from`
+						);
+
 						if (index_n === -1) {
 							break;
 						}
@@ -183,9 +201,13 @@ export const methods = {
 							content_s_.slice(0, index_n) +
 							content_s_.slice(content_s_.indexOf("\n", index_n) + 1);
 					}
+
 					// 删除声明
 					{
-						let index_n = content_s_.indexOf("nodes!: Nodes;");
+						const index_n = content_s_.indexOf(
+							`nodes!: ${storage.data.generate_class_s};`
+						);
+
 						if (index_n === -1) {
 							break;
 						}
@@ -193,9 +215,13 @@ export const methods = {
 							content_s_.slice(0, index_n) +
 							content_s_.slice(content_s_.indexOf("\n", index_n) + 1);
 					}
+
 					// 删除定义
 					{
-						let index_n = content_s_.indexOf("this.nodes = new Nodes");
+						const index_n = content_s_.indexOf(
+							`this.nodes = new ${storage.data.generate_class_s}`
+						);
+
 						if (index_n === -1) {
 							break;
 						}
@@ -204,6 +230,7 @@ export const methods = {
 							content_s_.slice(content_s_.indexOf("\n", index_n) + 1);
 					}
 				}
+
 				break;
 		}
 		return content_s_;
@@ -217,41 +244,51 @@ export const methods = {
 	 */
 	async add_generate_code(content_s_: string, mount_comp_: cc.Component): Promise<string> {
 		/** 引用节点数据 */
-		let nodes = await this.get_nodes(mount_comp_.node);
+		const nodes = await this.get_nodes(mount_comp_.node);
 		/** 组件名 */
-		let comp_name_s = (self as any).cc.js.getClassName(mount_comp_);
+		const comp_name_s = (self as any).cc.js.getClassName(mount_comp_);
 		/** 组件路径 */
-		let comp_path_s = path.normalize(
+		const comp_path_s = path.normalize(
 			(await Editor.Message.request(
 				"asset-db",
 				"query-path",
 				(mount_comp_ as any).__scriptUuid
 			))!
 		);
+
 		switch (storage.data.generate_type) {
 			case config.generate_type.property:
 				{
 					// 添加导入
 					{
-						let index_n = content_s_.indexOf("import * as cc from");
+						const index_n = content_s_.indexOf("import * as cc from");
+
 						// 添加
 						if (index_n === -1) {
 							content_s_ = `import * as cc from "cc";\n` + content_s_;
 						}
 					}
+
 					// 添加属性
 					{
 						/** 添加位置 */
 						let index_n = content_s_.indexOf(storage.data.mount_comp_mark);
+
 						if (index_n === -1) {
-							index_n = content_s_.indexOf(
-								`export class ${comp_name_s} extends Component {`
+							const match_result = content_s_.match(
+								new RegExp(
+									// eslint-disable-next-line no-useless-escape
+									`export class ${comp_name_s} extends ((?!_)(?!.*?_$)[\w\d_u4e00-u9fa5\.]+)( *){`,
+									"i"
+								)
 							);
+
+							index_n = match_result?.index ?? -1;
 							if (index_n === -1) {
 								log.error("add_generate_code - 未找到属性生成位置");
 								break;
 							}
-							index_n += `export class ${comp_name_s} extends Component {`.length;
+							index_n += match_result![0].length;
 						} else {
 							index_n += storage.data.mount_comp_mark.length;
 						}
@@ -263,17 +300,20 @@ export const methods = {
 							nodes.map((v) => v.value_s).join("\n") +
 							content_s_.slice(index_n);
 					}
+
 					// 属性赋值
 					{
 						/** 当前节点路径 */
-						let node_path_s = (mount_comp_.node as any)[" INFO "].split(", path: ")[1];
+						const node_path_s = (mount_comp_.node as any)[" INFO "].split(
+							", path: "
+						)[1];
 
 						this.scene_update_fs.push({
 							valid_f: () => Boolean(cc.find(node_path_s)),
 							event_f: () => {
-								let node = cc.find(node_path_s)!;
+								const node = cc.find(node_path_s)!;
 								/** 组件下标 */
-								let comp_index_n = node.components.findIndex(
+								const comp_index_n = node.components.findIndex(
 									(v) => v.name === mount_comp_.name
 								);
 
@@ -297,46 +337,61 @@ export const methods = {
 						});
 					}
 				}
+
 				break;
 			case config.generate_type.script:
 				{
 					// 添加导入
 					{
-						let index_n = content_s_.indexOf("import Nodes from");
+						const index_n = content_s_.indexOf(
+							`import ${storage.data.generate_class_s} from`
+						);
+
 						// 添加
 						if (index_n === -1) {
 							content_s_ =
-								`import Nodes from "./${path.basename(comp_path_s, ".ts")}${
-									storage.data.script_end_s
-								}";\n` + content_s_;
+								`import ${storage.data.generate_class_s} from "./${path.basename(
+									comp_path_s,
+									".ts"
+								)}${storage.data.script_end_s}";\n` + content_s_;
 						}
 					}
+
 					// 添加声明
 					{
 						/** 添加位置 */
 						let index_n = content_s_.indexOf(storage.data.mount_comp_mark);
+
 						// 初始化添加位置
 						{
 							if (index_n === -1) {
-								index_n = content_s_.indexOf(
-									`export class ${comp_name_s} extends Component {`
+								const match_result = content_s_.match(
+									new RegExp(
+										// eslint-disable-next-line no-useless-escape
+										`export class ${comp_name_s} extends ((?!_)(?!.*?_$)[\w\d_u4e00-u9fa5\.]+)( *){`,
+										"i"
+									)
 								);
+
+								index_n = match_result?.index ?? -1;
 								if (index_n === -1) {
 									log.error("add_generate_code - 未找到声明添加位置");
 									break;
 								}
-								index_n += `export class ${comp_name_s} extends Component {`.length;
+								index_n += match_result![0].length;
 							} else {
 								index_n += storage.data.mount_comp_mark.length;
 							}
 							index_n = content_s_.indexOf("\n", index_n);
 						}
+
 						// 添加声明
 						content_s_ =
 							content_s_.slice(0, index_n) +
-							"\nnodes!: Nodes;" +
+							`\nnodes!: ${storage.data.generate_class_s};` +
 							content_s_.slice(index_n);
 					}
+
 					// 添加定义
 					{
 						// 直接在 onLoad 添加
@@ -344,28 +399,37 @@ export const methods = {
 
 						// onLoad 不存在
 						if (index_n === -1) {
-							/** 类开始下标 */
-							let class_body_index_n = content_s_.indexOf(
-								`export class ${comp_name_s} extends Component `
+							const match_result = content_s_.match(
+								new RegExp(
+									// eslint-disable-next-line no-useless-escape
+									`export class ${comp_name_s} extends ((?!_)(?!.*?_$)[\w\d_u4e00-u9fa5\.]+)( *){`,
+									"i"
+								)
 							);
+							/** 类开始下标 */
+							let class_body_index_n = match_result?.index ?? -1;
+
 							{
 								if (class_body_index_n === -1) {
 									log.error("add_generate_code - 未找到类开始下标");
 									break;
 								}
-								class_body_index_n +=
-									`export class ${comp_name_s} extends Component `.length;
+								class_body_index_n += match_result![0].length - 1;
 							}
+
 							/** 类体 */
-							let body_s = lib_string_extend.get_block(
+							const body_s = lib_string_extend.get_block(
 								content_s_.slice(class_body_index_n)
 							)[0];
 							/** 新类体 */
-							let new_body_s =
+							const new_body_s =
 								body_s +
-								["onLoad() {", "this.nodes = new Nodes(this.node);", "}"].join(
-									"\n"
-								);
+								[
+									"onLoad() {",
+									`this.nodes = new ${storage.data.generate_class_s}(this.node);`,
+									"}",
+								].join("\n");
+
 							// 更新内容
 							content_s_ =
 								content_s_.slice(0, class_body_index_n + 1) +
@@ -377,15 +441,22 @@ export const methods = {
 							index_n += "onLoad() {".length;
 							content_s_ =
 								content_s_.slice(0, index_n) +
-								"\nthis.nodes = new Nodes(this.node);" +
+								`\nthis.nodes = new ${storage.data.generate_class_s}(this.node);` +
 								content_s_.slice(index_n);
 						}
 					}
+
 					// 生成脚本
 					{
 						let nodes_script_s = fs.readFileSync(
 							path.join(config.path_s, "res/template"),
 							"utf-8"
+						);
+
+						// 类名
+						nodes_script_s = nodes_script_s.replace(
+							/类名/g,
+							storage.data.generate_class_s
 						);
 						// 声明
 						nodes_script_s = nodes_script_s.replace(
@@ -401,16 +472,18 @@ export const methods = {
 						nodes_script_s = string_extend.format(nodes_script_s);
 						// 生成
 						{
-							let path_s = path.join(
+							const path_s = path.join(
 								path.dirname(comp_path_s),
 								path.basename(comp_path_s, ".ts") +
 									storage.data.script_end_s +
 									".ts"
 							);
+
 							lib_file.add(path_s, nodes_script_s);
 						}
 					}
 				}
+
 				break;
 		}
 
@@ -421,19 +494,21 @@ export const methods = {
 
 	/** 生成节点引用 */
 	async generate_nodes(node_uuid_s_: string): Promise<void> {
-		let node: cc.Node = (self as any).cce.Node.query(node_uuid_s_);
+		const node: cc.Node = (self as any).cce.Node.query(node_uuid_s_);
+
 		if (!node) {
 			log.error("generate_nodes - 节点未找到");
 			return;
 		}
 		/** 挂载组件 */
-		let mount_comp = await this.find_mount_path(node);
+		const mount_comp = await this.find_mount_path(node);
+
 		if (!mount_comp) {
 			log.error("generate_nodes - 挂载组件不存在");
 			return;
 		}
 		/** 挂载路径 */
-		let mount_path_s = path.normalize(
+		const mount_path_s = path.normalize(
 			(await Editor.Message.request(
 				"asset-db",
 				"query-path",
@@ -453,7 +528,8 @@ export const methods = {
 	/* ------------------------------- segmentation ------------------------------- */
 	/** 生成代码 */
 	async event_generate(): Promise<void> {
-		let node_uuid_ss: string[] = Editor.Selection.getSelected("node");
+		const node_uuid_ss: string[] = Editor.Selection.getSelected("node");
+
 		if (!node_uuid_ss.length) {
 			return;
 		}
@@ -461,7 +537,7 @@ export const methods = {
 		await storage.update();
 
 		// 生成节点引用
-		for (let v_s of node_uuid_ss) {
+		for (const v_s of node_uuid_ss) {
 			await this.generate_nodes(v_s);
 		}
 		log.log("生成结束");

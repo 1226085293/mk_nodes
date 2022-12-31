@@ -1,10 +1,11 @@
 import * as cc from "cc";
 
-class Nodes {
+class 类名 {
 	constructor(node: cc.Node) {
 		// 定义
 	}
+
 	// 声明
 }
 
-export default Nodes;
+export default 类名;

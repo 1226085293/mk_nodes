@@ -1,7 +1,5 @@
 import * as fs from "fs";
-import path from "path";
 import * as vue from "vue";
-import lib_css from "../../../../@libs/lib_css";
 import config from "../../config";
 import storage from "../../storage";
 
@@ -22,6 +20,8 @@ const component: vue.Component = {
 			mount_comp_mark: "extends Component {",
 			/** 脚本名后缀 */
 			script_end_s: "Nodes",
+			/** 生成类名 */
+			generate_class_s: "Nodes",
 		};
 	},
 	watch: {
@@ -45,6 +45,10 @@ const component: vue.Component = {
 		script_end_s(value) {
 			storage.data.script_end_s = value;
 		},
+		/** 生成类名 */
+		generate_class_s(value) {
+			storage.data.generate_class_s = value;
+		},
 	},
 	created() {
 		this.self = this;
@@ -56,6 +60,7 @@ const component: vue.Component = {
 		this.mount_comp_base = storage.data.mount_comp_base;
 		this.mount_comp_mark = storage.data.mount_comp_mark;
 		this.script_end_s = storage.data.script_end_s;
+		this.generate_class_s = storage.data.generate_class_s;
 	},
 };
 

@@ -54,4 +54,14 @@
 			@confirm="script_end_s = $event.target.value"
 		></ui-input>
 	</ui-prop>
+
+	<!-- 生成类名 -->
+	<ui-prop style="margin: 5px" v-show="generate_type === config_generate_type.script">
+		<ui-label slot="label">生成类名</ui-label>
+		<ui-input
+			v-bind:value="generate_class_s"
+			slot="content"
+			@confirm="generate_class_s = $event.target.value"
+		></ui-input>
+	</ui-prop>
 </div>
